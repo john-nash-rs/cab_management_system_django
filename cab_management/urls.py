@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import include
 
 from user.views import register_driver, register_rider, sign_in
 
@@ -23,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/register/rider/', register_rider, name='register_rider'),
     path('api/register/driver/', register_driver, name='register_driver'),
+    path('api/booking/', include('booking.urls')),
     path('api/signin/', sign_in, name='sign_in')
 ]
 
