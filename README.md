@@ -65,3 +65,16 @@ curl --location 'http://localhost:8000/api/booking/payment/1/' \
     "ride" : 1,
     "booking" : 1
 }'
+
+## Rate a user
+
+curl --location 'http://localhost:8000/api/ratings/create/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "user": 1, 
+    "rating": 4.5,
+    "review": "Great experience!"
+}'
+
+## Get rating for a user
+curl --location 'http://localhost:8000/api/ratings/user/1'

@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/register/rider/', register_rider, name='register_rider'),
     path('api/register/driver/', register_driver, name='register_driver'),
     path('api/booking/', include('booking.urls')),
+    path('api/ratings/', include('ratings.urls')),
     path('api/signin/', sign_in, name='sign_in')
 ]
 
