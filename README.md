@@ -32,3 +32,36 @@ curl --location 'http://localhost:8000/api/signin/' \
     "username": "rider_username",
     "password": "rider_password"
   }'
+
+## Create a booking
+
+curl --location 'http://localhost:8000/api/booking/book/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "rider": 1, 
+    "status": "Pending"
+}'
+
+## Create a ride
+
+curl --location 'http://localhost:8000/api/booking/ride/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "rider": 1, 
+    "driver": 1, 
+    "booking": 1, 
+    "pickup_location": "Location A",
+    "dropoff_location": "Location B",
+    "status": "Pending"
+}'
+
+## create a payment
+
+curl --location 'http://localhost:8000/api/booking/payment/1/' \
+--header 'Content-Type: application/json' \
+--data '{
+    "amount" : 34,
+    "status" : "Paid",
+    "ride" : 1,
+    "booking" : 1
+}'

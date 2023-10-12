@@ -29,28 +29,40 @@ class BookingView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({"detail": "Booking is already canceled."}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create_payment(self, request, booking_id, format=None):
+class PaymentView(APIView):
+
+    def post(self, request, booking_id, format=None):
         try:
             booking = Booking.objects.get(pk=booking_id)
         except Booking.DoesNotExist:
             return Response({"detail": "Booking not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        if booking.payment:
+        if booking.status == "Paid":
             return Response({"detail": "Payment for this booking already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = PaymentSerializer(data=request.data)
         if serializer.is_valid():
-            payment = serializer.save()
-            booking.payment = payment
             booking.status = "Paid"
             booking.save()
+            payment = serializer.save()
+            payment.booking = booking
             return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'], url_path='create-ride')
-    def create_ride(self, request, format=None):
-        serializer = RideSerializer(data=request.data)
-        if serializer.is_valid():
-            ride = serializer.save()
-            return Response(RideSerializer(ride).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class RideView(APIView):
+    def post(self, request, format=None):
+        # Create a new ride
+        ride_serializer = RideSerializer(data=request.data)
+        if ride_serializer.is_valid():
+            ride = ride_serializer.save()
+
+            # Update the associated booking's status to "Confirm"
+            booking = ride.booking
+            booking.status = "Confirm"
+            booking.save()
+
+            return Response({
+                "ride": RideSerializer(ride).data,
+                "booking": BookingSerializer(booking).data
+            }, status=status.HTTP_201_CREATED)
+        return Response(ride_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
